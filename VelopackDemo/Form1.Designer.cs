@@ -47,6 +47,8 @@ partial class Form1
         Controls.Add(lblStatus);
         Name = "Form1";
         Text = "VelopackDemo";
+        Load += Form1_Load;
+        Activated += Form1_Activated;
         ResumeLayout(false);
         PerformLayout();
     }
