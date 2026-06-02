@@ -51,11 +51,12 @@ jobs:
             --outputDir VelopackDemo/releases `
             --signParams "/sha1 ${{ steps.cert.outputs.THUMBPRINT }} /fd sha256 /tr http://timestamp.sectigo.com /td sha256"
 
-      - name: Icon in Setup-EXE einbetten
+      - name: Icon in Setup-EXE einbetten und neu signieren
         run: |
           $rcedit = "$env:RUNNER_TEMP\rcedit.exe"
           Invoke-WebRequest -Uri "https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe" -OutFile $rcedit
           & $rcedit "VelopackDemo/releases/VelopackDemo-win-Setup.exe" --set-icon "VelopackDemo/app.ico"
+          signtool sign /sha1 "${{ steps.cert.outputs.THUMBPRINT }}" /fd sha256 /tr http://timestamp.sectigo.com /td sha256 "VelopackDemo/releases/VelopackDemo-win-Setup.exe"
 
       - name: GitHub Release erstellen & Dateien hochladen
         uses: softprops/action-gh-release@v2
