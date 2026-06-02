@@ -9,8 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Bezeichner (Klassen, Methoden, Variablen) bleiben auf Englisch
 
 **Benennung & Struktur**
-- Methodennamen immer PascalCase
-- Event-Handler-Methoden enden immer auf `EventHandler` (z.B. `Form1_LoadEventHandler`, `BtnCheckUpdateClickEventHandler`)
+- Methodennamen immer PascalCase, ausschließlich Buchstaben und Zahlen (keine Unterstriche)
+- Event-Handler-Methoden enden immer auf `EventHandler` (z.B. `FormLoadEventHandler`, `BtnCheckUpdateClickEventHandler`)
 - Klassen werden mit Regions strukturiert – in dieser Reihenfolge: `Fields`, `Ctors`, `Properties`, `Methods`, `General`
 - Innerhalb von `Methods`: zuerst `public`, dann `protected`, dann `private`
 

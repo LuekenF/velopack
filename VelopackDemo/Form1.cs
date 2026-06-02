@@ -37,12 +37,12 @@ public partial class Form1 : Form
 
     #region Methods
 
-    private async void Form1_LoadEventHandler(object sender, EventArgs e)
+    private async void FormLoadEventHandler(object sender, EventArgs e)
     {
         await RunUpdateCheckAsync(checkRequiredVersion: true);
     }
 
-    private async void Form1_ActivatedEventHandler(object sender, EventArgs e)
+    private async void FormActivatedEventHandler(object sender, EventArgs e)
     {
         if (_lastUpdateCheckDate.Date >= DateTime.Today) return;
         _lastUpdateCheckDate = DateTime.Today;
