@@ -2,6 +2,27 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Coding-Vorgaben
+
+**Sprache & UI-Texte**
+- Alle sichtbaren Texte in der App (Labels, Buttons, Statusmeldungen, Fehlertexte) sind auf Deutsch
+- Bezeichner (Klassen, Methoden, Variablen) bleiben auf Englisch
+
+**Kommentare**
+- Kein Kommentar im Code außer wenn das *Warum* nicht aus dem Code selbst ersichtlich ist
+- Keine XML-Docstrings, keine mehrzeiligen Kommentarblöcke
+
+**Async**
+- `async void` ausschließlich für Event-Handler (z.B. `_Click`, `_Load`, `_Activated`)
+- Alle anderen asynchronen Methoden geben `Task` oder `Task<T>` zurück
+- Niemals `.Result` oder `.GetAwaiter().GetResult()` auf Tasks aufrufen
+
+**Git & Releases**
+- Vor jedem Commit `dotnet build` ausführen und sicherstellen dass 0 Fehler vorliegen
+- Releases ausschließlich über Git-Tags auslösen (`git tag vX.Y.Z && git push origin vX.Y.Z`)
+- `codesign.pfx` und alle `.pfx`-Dateien niemals einchecken
+- `min-version.json` nur dann ändern, wenn ein Pflichtupdate für ältere Versionen gewünscht ist
+
 ## Build & Entwicklung
 
 ```powershell
