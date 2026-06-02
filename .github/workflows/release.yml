@@ -50,6 +50,11 @@ jobs:
             --outputDir VelopackDemo/releases `
             --signParams "/sha1 ${{ steps.cert.outputs.THUMBPRINT }} /fd sha256 /tr http://timestamp.sectigo.com /td sha256"
 
+      - name: Icon in Setup-EXE einbetten
+        run: |
+          npm install -g rcedit
+          rcedit "VelopackDemo/releases/VelopackDemo-win-Setup.exe" --set-icon "VelopackDemo/app.ico"
+
       - name: GitHub Release erstellen & Dateien hochladen
         uses: softprops/action-gh-release@v2
         with:
