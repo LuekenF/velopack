@@ -11,6 +11,7 @@ public partial class Form1 : Form
     private const string GithubRepo = "https://github.com/LuekenF/velopack";
 
     private DateTime _lastUpdateCheckDate = DateTime.MinValue;
+    private bool _isUpdating = false;
 
     public Form1()
     {
@@ -21,56 +22,58 @@ public partial class Form1 : Form
 
     private async void Form1_Load(object sender, EventArgs e)
     {
-        await CheckForRequiredUpdateAsync();
+        await RunUpdateCheckAsync(checkRequiredVersion: true);
     }
 
     private async void Form1_Activated(object sender, EventArgs e)
     {
-        if (_lastUpdateCheckDate.Date < DateTime.Today)
+        if (_lastUpdateCheckDate.Date >= DateTime.Today) return;
+        _lastUpdateCheckDate = DateTime.Today;
+        await RunUpdateCheckAsync(checkRequiredVersion: false);
+    }
+
+    private async Task RunUpdateCheckAsync(bool checkRequiredVersion)
+    {
+        if (_isUpdating) return;
+        _isUpdating = true;
+
+        try
         {
-            _lastUpdateCheckDate = DateTime.Today;
-            await CheckForUpdatesAsync(silent: true);
+            if (checkRequiredVersion && await IsForcedUpdateRequiredAsync())
+            {
+                btnCheckUpdate.Enabled = false;
+                lblStatus.Text = "Pflichtupdate wird heruntergeladen...";
+                await ApplyUpdateAsync();
+                return;
+            }
+
+            await ApplyUpdateAsync(silent: true);
+        }
+        finally
+        {
+            _isUpdating = false;
         }
     }
 
-    private async Task CheckForRequiredUpdateAsync()
+    private async Task<bool> IsForcedUpdateRequiredAsync()
     {
         try
         {
             var json = await Http.GetStringAsync(MinVersionUrl);
             var doc = JsonDocument.Parse(json);
             var minStr = doc.RootElement.GetProperty("minimumRequiredVersion").GetString();
-
             var current = Version.Parse(Application.ProductVersion);
             var minimum = Version.Parse(minStr + ".0");
-
-            if (current < minimum)
-            {
-                btnCheckUpdate.Enabled = false;
-                lblStatus.Text = "Pflichtupdate wird heruntergeladen...";
-
-                var mgr = new UpdateManager(new GithubSource(GithubRepo, null, false));
-                var updateInfo = await mgr.CheckForUpdatesAsync();
-
-                if (updateInfo != null)
-                {
-                    await mgr.DownloadUpdatesAsync(updateInfo);
-                    lblStatus.Text = "Update bereit. App wird neu gestartet...";
-                    mgr.ApplyUpdatesAndRestart(updateInfo);
-                }
-            }
+            return current < minimum;
         }
-        catch { }
+        catch
+        {
+            return false;
+        }
     }
 
-    private async Task CheckForUpdatesAsync(bool silent = false)
+    private async Task ApplyUpdateAsync(bool silent = false)
     {
-        if (!silent)
-        {
-            btnCheckUpdate.Enabled = false;
-            lblStatus.Text = "Suche nach Updates...";
-        }
-
         try
         {
             var mgr = new UpdateManager(new GithubSource(GithubRepo, null, false));
@@ -83,7 +86,7 @@ public partial class Form1 : Form
                 return;
             }
 
-            lblStatus.Text = $"Update verfügbar: {updateInfo.TargetFullRelease.Version} – lade herunter...";
+            lblStatus.Text = $"Update {updateInfo.TargetFullRelease.Version} wird heruntergeladen...";
             await mgr.DownloadUpdatesAsync(updateInfo);
             lblStatus.Text = "Update bereit. App wird neu gestartet...";
             mgr.ApplyUpdatesAndRestart(updateInfo);
@@ -93,15 +96,23 @@ public partial class Form1 : Form
             if (!silent)
                 lblStatus.Text = $"Fehler: {ex.Message}";
         }
-        finally
-        {
-            if (!silent)
-                btnCheckUpdate.Enabled = true;
-        }
     }
 
     private async void btnCheckUpdate_Click(object sender, EventArgs e)
     {
-        await CheckForUpdatesAsync(silent: false);
+        if (_isUpdating) return;
+        _isUpdating = true;
+        btnCheckUpdate.Enabled = false;
+        lblStatus.Text = "Suche nach Updates...";
+
+        try
+        {
+            await ApplyUpdateAsync(silent: false);
+        }
+        finally
+        {
+            _isUpdating = false;
+            btnCheckUpdate.Enabled = true;
+        }
     }
 }
