@@ -29,10 +29,15 @@ jobs:
       - name: Publishen
         run: dotnet publish VelopackDemo/VelopackDemo.csproj -c Release -r win-x64 --self-contained true -o VelopackDemo/publish
 
-      - name: Zertifikat einrichten
+      - name: Zertifikat in Cert-Store importieren
+        id: cert
         run: |
           $bytes = [Convert]::FromBase64String("${{ secrets.CERT_PFX }}")
-          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\codesign.pfx", $bytes)
+          $pfxPath = "$env:RUNNER_TEMP\codesign.pfx"
+          [IO.File]::WriteAllBytes($pfxPath, $bytes)
+          $pwd = ConvertTo-SecureString -String "${{ secrets.CERT_PASSWORD }}" -Force -AsPlainText
+          $cert = Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation "Cert:\CurrentUser\My" -Password $pwd
+          echo "THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_OUTPUT
 
       - name: Velopack paketieren & signieren
         run: |
@@ -42,7 +47,7 @@ jobs:
             --packDir VelopackDemo/publish `
             --mainExe VelopackDemo.exe `
             --outputDir VelopackDemo/releases `
-            --signParams "/f $env:RUNNER_TEMP\codesign.pfx /p ${{ secrets.CERT_PASSWORD }} /fd sha256 /tr http://timestamp.sectigo.com /td sha256"
+            --signParams "/sha1 ${{ steps.cert.outputs.THUMBPRINT }} /fd sha256 /tr http://timestamp.sectigo.com /td sha256"
 
       - name: GitHub Release erstellen & Dateien hochladen
         uses: softprops/action-gh-release@v2
