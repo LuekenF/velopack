@@ -41,6 +41,10 @@ jobs:
 
       - name: Velopack paketieren & signieren
         run: |
+          Write-Host "Prüfe app.ico..."
+          Test-Path VelopackDemo/app.ico
+          Get-Item VelopackDemo/app.ico
+
           vpk pack `
             --packId VelopackDemo `
             --packVersion ${{ steps.version.outputs.VERSION }} `
