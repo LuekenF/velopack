@@ -13,10 +13,13 @@ public partial class Form1 : Form
     private DateTime _lastUpdateCheckDate = DateTime.MinValue;
     private bool _isUpdating = false;
 
+    private static Version CurrentVersion =>
+        Version.Parse(Application.ProductVersion.Split('+')[0]);
+
     public Form1()
     {
         InitializeComponent();
-        var v = Version.Parse(Application.ProductVersion);
+        var v = CurrentVersion;
         lblVersion.Text = $"Version: {v.Major}.{v.Minor}.{v.Build}";
     }
 
@@ -62,7 +65,7 @@ public partial class Form1 : Form
             var json = await Http.GetStringAsync(MinVersionUrl);
             var doc = JsonDocument.Parse(json);
             var minStr = doc.RootElement.GetProperty("minimumRequiredVersion").GetString();
-            var current = Version.Parse(Application.ProductVersion);
+            var current = CurrentVersion;
             var minimum = Version.Parse(minStr + ".0");
             return current < minimum;
         }
