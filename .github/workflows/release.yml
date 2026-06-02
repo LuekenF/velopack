@@ -29,14 +29,20 @@ jobs:
       - name: Publishen
         run: dotnet publish VelopackDemo/VelopackDemo.csproj -c Release -r win-x64 --self-contained true -o VelopackDemo/publish
 
-      - name: Velopack paketieren
+      - name: Zertifikat einrichten
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.CERT_PFX }}")
+          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\codesign.pfx", $bytes)
+
+      - name: Velopack paketieren & signieren
         run: |
           vpk pack `
             --packId VelopackDemo `
             --packVersion ${{ steps.version.outputs.VERSION }} `
             --packDir VelopackDemo/publish `
             --mainExe VelopackDemo.exe `
-            --outputDir VelopackDemo/releases
+            --outputDir VelopackDemo/releases `
+            --signParams "/f $env:RUNNER_TEMP\codesign.pfx /p ${{ secrets.CERT_PASSWORD }} /fd sha256 /tr http://timestamp.sectigo.com /td sha256"
 
       - name: GitHub Release erstellen & Dateien hochladen
         uses: softprops/action-gh-release@v2

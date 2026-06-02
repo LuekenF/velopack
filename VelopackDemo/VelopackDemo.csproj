@@ -9,6 +9,7 @@
     <Version>1.0.0</Version>
     <AssemblyName>VelopackDemo</AssemblyName>
     <Product>VelopackDemo</Product>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
