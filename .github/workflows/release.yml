@@ -53,8 +53,9 @@ jobs:
 
       - name: Icon in Setup-EXE einbetten
         run: |
-          npm install -g rcedit
-          rcedit "VelopackDemo/releases/VelopackDemo-win-Setup.exe" --set-icon "VelopackDemo/app.ico"
+          $rcedit = "$env:RUNNER_TEMP\rcedit.exe"
+          Invoke-WebRequest -Uri "https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe" -OutFile $rcedit
+          & $rcedit "VelopackDemo/releases/VelopackDemo-win-Setup.exe" --set-icon "VelopackDemo/app.ico"
 
       - name: GitHub Release erstellen & Dateien hochladen
         uses: softprops/action-gh-release@v2
