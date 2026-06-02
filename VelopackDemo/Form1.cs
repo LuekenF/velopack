@@ -6,6 +6,8 @@ namespace VelopackDemo;
 
 public partial class Form1 : Form
 {
+    #region Fields
+
     private static readonly HttpClient Http = new();
     private const string MinVersionUrl = "https://raw.githubusercontent.com/LuekenF/velopack/main/min-version.json";
     private const string GithubRepo = "https://github.com/LuekenF/velopack";
@@ -13,8 +15,9 @@ public partial class Form1 : Form
     private DateTime _lastUpdateCheckDate = DateTime.MinValue;
     private bool _isUpdating = false;
 
-    private static Version CurrentVersion =>
-        Version.Parse(Application.ProductVersion.Split('+')[0]);
+    #endregion
+
+    #region Ctors
 
     public Form1()
     {
@@ -23,16 +26,45 @@ public partial class Form1 : Form
         lblVersion.Text = $"Version: {v.Major}.{v.Minor}.{v.Build}";
     }
 
-    private async void Form1_Load(object sender, EventArgs e)
+    #endregion
+
+    #region Properties
+
+    private static Version CurrentVersion =>
+        Version.Parse(Application.ProductVersion.Split('+')[0]);
+
+    #endregion
+
+    #region Methods
+
+    private async void Form1_LoadEventHandler(object sender, EventArgs e)
     {
         await RunUpdateCheckAsync(checkRequiredVersion: true);
     }
 
-    private async void Form1_Activated(object sender, EventArgs e)
+    private async void Form1_ActivatedEventHandler(object sender, EventArgs e)
     {
         if (_lastUpdateCheckDate.Date >= DateTime.Today) return;
         _lastUpdateCheckDate = DateTime.Today;
         await RunUpdateCheckAsync(checkRequiredVersion: false);
+    }
+
+    private async void BtnCheckUpdateClickEventHandler(object sender, EventArgs e)
+    {
+        if (_isUpdating) return;
+        _isUpdating = true;
+        btnCheckUpdate.Enabled = false;
+        lblStatus.Text = "Suche nach Updates...";
+
+        try
+        {
+            await ApplyUpdateAsync(silent: false);
+        }
+        finally
+        {
+            _isUpdating = false;
+            btnCheckUpdate.Enabled = true;
+        }
     }
 
     private async Task RunUpdateCheckAsync(bool checkRequiredVersion)
@@ -101,21 +133,5 @@ public partial class Form1 : Form
         }
     }
 
-    private async void btnCheckUpdate_Click(object sender, EventArgs e)
-    {
-        if (_isUpdating) return;
-        _isUpdating = true;
-        btnCheckUpdate.Enabled = false;
-        lblStatus.Text = "Suche nach Updates...";
-
-        try
-        {
-            await ApplyUpdateAsync(silent: false);
-        }
-        finally
-        {
-            _isUpdating = false;
-            btnCheckUpdate.Enabled = true;
-        }
-    }
+    #endregion
 }

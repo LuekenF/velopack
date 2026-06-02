@@ -8,6 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Alle sichtbaren Texte in der App (Labels, Buttons, Statusmeldungen, Fehlertexte) sind auf Deutsch
 - Bezeichner (Klassen, Methoden, Variablen) bleiben auf Englisch
 
+**Benennung & Struktur**
+- Methodennamen immer PascalCase
+- Event-Handler-Methoden enden immer auf `EventHandler` (z.B. `Form1_LoadEventHandler`, `BtnCheckUpdateClickEventHandler`)
+- Klassen werden mit Regions strukturiert – in dieser Reihenfolge: `Fields`, `Ctors`, `Properties`, `Methods`, `General`
+- Innerhalb von `Methods`: zuerst `public`, dann `protected`, dann `private`
+
 **Kommentare**
 - Kein Kommentar im Code außer wenn das *Warum* nicht aus dem Code selbst ersichtlich ist
 - Keine XML-Docstrings, keine mehrzeiligen Kommentarblöcke

@@ -38,7 +38,7 @@ partial class Form1
         btnCheckUpdate.Name = "btnCheckUpdate";
         btnCheckUpdate.Size = new Size(160, 30);
         btnCheckUpdate.Text = "Nach Updates suchen";
-        btnCheckUpdate.Click += btnCheckUpdate_Click;
+        btnCheckUpdate.Click += BtnCheckUpdateClickEventHandler;
 
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(500, 200);
@@ -47,8 +47,8 @@ partial class Form1
         Controls.Add(lblStatus);
         Name = "Form1";
         Text = "VelopackDemo";
-        Load += Form1_Load;
-        Activated += Form1_Activated;
+        Load += Form1_LoadEventHandler;
+        Activated += Form1_ActivatedEventHandler;
         ResumeLayout(false);
         PerformLayout();
     }
