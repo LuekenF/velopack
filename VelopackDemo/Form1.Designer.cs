@@ -42,6 +42,7 @@ partial class Form1
 
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(500, 200);
+        Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath) ?? SystemIcons.Application;
         Controls.Add(lblVersion);
         Controls.Add(btnCheckUpdate);
         Controls.Add(lblStatus);
