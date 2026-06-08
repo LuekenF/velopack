@@ -39,6 +39,19 @@ jobs:
           $cert = Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation "Cert:\CurrentUser\My" -Password $pwd
           echo "THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_OUTPUT
 
+      - name: Vorheriges Release herunterladen (für Delta-Paket)
+        run: |
+          $tag = gh release list --limit 1 --json tagName -q '.[0].tagName'
+          if ($tag) {
+            Write-Host "Lade Pakete von Release $tag herunter..."
+            New-Item -ItemType Directory -Force VelopackDemo/releases | Out-Null
+            gh release download $tag --dir VelopackDemo/releases --pattern "*.nupkg" --skip-existing
+          } else {
+            Write-Host "Kein vorheriges Release gefunden, erstelle Full-Paket."
+          }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Velopack paketieren & signieren
         run: |
           Write-Host "Prüfe app.ico..."
