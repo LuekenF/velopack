@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (ohne v-Prefix, z.B. 1.2.2)'
+        required: true
+        type: string
 
 jobs:
   release:
@@ -24,7 +30,12 @@ jobs:
 
       - name: Version aus Tag lesen
         id: version
-        run: echo "VERSION=$($env:GITHUB_REF_NAME -replace '^v','')" >> $env:GITHUB_OUTPUT
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            echo "VERSION=${{ inputs.version }}" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "VERSION=$($env:GITHUB_REF_NAME -replace '^v','')" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Publishen
         run: dotnet publish VelopackDemo/VelopackDemo.csproj -c Release -r win-x64 --self-contained false -o VelopackDemo/publish /p:Version=${{ steps.version.outputs.VERSION }}
@@ -71,6 +82,7 @@ jobs:
       - name: GitHub Release erstellen & Dateien hochladen
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.version.outputs.VERSION }}
           files: VelopackDemo/releases/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
