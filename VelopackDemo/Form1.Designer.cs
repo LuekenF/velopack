@@ -18,31 +18,39 @@ partial class Form1
         lblVersion = new Label();
         lblStatus = new Label();
         btnCheckUpdate = new Button();
+        pictureBoxCat = new PictureBox();
         SuspendLayout();
+
+        pictureBoxCat.Location = new Point(20, 20);
+        pictureBoxCat.Name = "pictureBoxCat";
+        pictureBoxCat.Size = new Size(460, 200);
+        pictureBoxCat.SizeMode = PictureBoxSizeMode.StretchImage;
+        pictureBoxCat.TabStop = false;
 
         lblVersion.AutoSize = true;
         lblVersion.Font = new Font("Segoe UI", 10F);
-        lblVersion.Location = new Point(20, 20);
+        lblVersion.Location = new Point(20, 234);
         lblVersion.Name = "lblVersion";
         lblVersion.Text = "Version: ...";
 
         lblStatus.AutoSize = true;
         lblStatus.Font = new Font("Segoe UI", 9F);
         lblStatus.ForeColor = Color.DimGray;
-        lblStatus.Location = new Point(20, 100);
+        lblStatus.Location = new Point(20, 314);
         lblStatus.Name = "lblStatus";
         lblStatus.Text = "";
 
         btnCheckUpdate.Font = new Font("Segoe UI", 9F);
-        btnCheckUpdate.Location = new Point(20, 60);
+        btnCheckUpdate.Location = new Point(20, 274);
         btnCheckUpdate.Name = "btnCheckUpdate";
         btnCheckUpdate.Size = new Size(160, 30);
         btnCheckUpdate.Text = "Nach Updates suchen";
         btnCheckUpdate.Click += BtnCheckUpdateClickEventHandler;
 
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(500, 200);
+        ClientSize = new Size(500, 350);
         Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath) ?? SystemIcons.Application;
+        Controls.Add(pictureBoxCat);
         Controls.Add(lblVersion);
         Controls.Add(btnCheckUpdate);
         Controls.Add(lblStatus);
@@ -59,4 +67,5 @@ partial class Form1
     private Label lblVersion;
     private Label lblStatus;
     private Button btnCheckUpdate;
+    private PictureBox pictureBoxCat;
 }
